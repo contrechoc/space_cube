@@ -1,0 +1,70 @@
+// e-textile swatch 2020 script
+// http://etextile-summercamp.org/swatch-exchange/space-cube/
+
+#include <CapacitiveSensor.h>
+
+//using ATtiny85, 1 MHz, 3V, and capacitive sensing
+
+//the switch, pull up principle
+//the folded cube can also sense when folded (DWON)
+//but it should be unfolded to become active capacitive sensing
+
+CapacitiveSensor   cs = CapacitiveSensor(PB3, PB4);
+long timer;
+long total1;
+long total2;
+
+int stateUPDOWN = 0; //cube state is DOWN
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(0, OUTPUT);//led red
+  pinMode(1, OUTPUT);//led green
+  timer = millis() + 1000;
+  total2 =  cs.capacitiveSensor(30);
+
+  //for switch - two wires inside the cube
+  pinMode(2, INPUT_PULLUP);
+}
+
+void loop() {
+  //as long as the cube is down
+  while ( stateUPDOWN == 0 )
+  {
+    digitalWrite(0, HIGH);
+    //looking if the cube is up
+    if ( digitalRead(2) == HIGH)
+    {
+      stateUPDOWN = 1;
+      digitalWrite(0, LOW);
+      //cube is up
+    }
+    delay(500);
+  }
+  //if cube is up
+  if ( stateUPDOWN == 1)
+  {
+    if ( timer < millis())
+    {
+      digitalWrite(0, HIGH);//timer indicator
+      delay(10);
+      digitalWrite(0, LOW);
+      timer = millis() + 1000;
+    }
+    total1 =  cs.capacitiveSensor(30);
+    if ( abs( total1 - total2) > 10)
+    {
+      total2 = total1;
+      digitalWrite(1, HIGH);// green led - sensing a difference
+      delay(100);
+      digitalWrite(1, LOW);
+    }
+    //maybe cube is down?
+    if ( digitalRead(2) == LOW)
+    {
+      stateUPDOWN = 0;
+      digitalWrite(0, HIGH); //red led - no sensing
+      digitalWrite(1, LOW);
+    }
+  }
+}
