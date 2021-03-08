@@ -47,17 +47,17 @@ void loop() {
     if ( timer < millis())
     {
       digitalWrite(0, HIGH);//timer indicator
-      delay(10);
+      delay(5);
       digitalWrite(0, LOW);
-      timer = millis() + 1000;
+      timer = millis() + 2000;
     }
     total1 =  cs.capacitiveSensor(30);
-    if ( abs( total1 - total2) > 10)
+    if ( abs( total1 - total2) > 20)
     {
-      total2 = total1;
       digitalWrite(1, HIGH);// green led - sensing a difference
       delay(100);
       digitalWrite(1, LOW);
+       total2 = total1;
     }
     //maybe cube is down?
     if ( digitalRead(2) == LOW)
@@ -68,3 +68,4 @@ void loop() {
     }
   }
 }
+
